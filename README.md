@@ -18,28 +18,89 @@ homepage/
 
 ## 一、部署到 GitHub Pages
 
+> **本项目实际参数**（下文示例均按此填写）：
+> - 用户名：`XiaopingDeng`
+> - 仓库名：`XiaopingDeng.github.io`
+> - 目标地址：<https://XiaopingDeng.github.io>
+> - 认证方式：**HTTPS + Personal Access Token**（不用 SSH）
+
 ### 方式 A：用户主页（推荐，地址形如 `https://用户名.github.io`）
 
-1. 在 GitHub 新建仓库，仓库名**必须**是 `<你的用户名>.github.io`（例如用户名是 `dengxiaoping`，仓库名就是 `dengxiaoping.github.io`）。
-2. 把本目录（`homepage/`）里的**全部文件**放到该仓库根目录，即仓库根下直接是 `index.html`、`styles.css`、`images/`、`files/`。
-3. 提交并推送：
+#### A-1. 在网页端新建仓库
 
-   ```bash
-   git init
-   git add .
-   git commit -m "add personal homepage"
-   git branch -M main
-   git remote add origin https://github.com/<你的用户名>/<你的用户名>.github.io.git
-   git push -u origin main
-   ```
+1. 打开 <https://github.com/new>。
+2. **Repository name** 填 `XiaopingDeng.github.io` —— 必须严格等于 `<用户名>.github.io`，否则用户主页不生效。
+3. **Public** 必须选公开（私有仓库的 Pages 需要付费账号）。
+4. **不要**勾选 `Add a README file`、`.gitignore`、`license` —— 保持**空仓库**，否则首次 push 会因远端有提交而冲突。
+5. 点 **Create repository**。
 
-4. 等待 1—2 分钟，访问 `https://<你的用户名>.github.io` 即可。
+#### A-2. 生成 Personal Access Token（classic）
+
+SSH 因公钥未注册到 GitHub 而报 `Permission denied (publickey)`，改用 token 最省事：
+
+1. 打开 <https://github.com/settings/tokens> → **Generate new token** → **Generate new token (classic)**。
+2. **Note** 随便填（如 `homepage-push`）；**Expiration** 建议选 90 天或自定义。
+3. **Scopes** 勾 **`repo`**（整块勾上，含 `repo:status`、`public_repo` 等子项）—— 这是 push 代码到仓库的最小必需权限。
+4. 拉到底点 **Generate token**，页面顶部会显示一串 `ghp_…`。
+5. **立刻复制保存**（只显示这一次），例如存到本地密码管理器。
+
+#### A-3. 提交并推送
+
+已在本机 `homepage/` 目录里初始化过 git 的，只需确认 remote 用 HTTPS：
+
+```bash
+cd /e/邓晓平/CVS/web/homepage
+
+# 确认/切换为 HTTPS（SSH 写法 git@github.com:... 换成 https://github.com/...）
+git remote set-url origin https://github.com/XiaopingDeng/XiaopingDeng.github.io.git
+git remote -v          # 应显示 https://github.com/XiaopingDeng/XiaopingDeng.github.io.git
+
+git push -u origin main
+```
+
+还没初始化过的，从零走一遍：
+
+```bash
+git init
+git add .
+git commit -m "add personal homepage"
+git branch -M main
+git remote add origin https://github.com/XiaopingDeng/XiaopingDeng.github.io.git
+git push -u origin main
+```
+
+push 时会弹出凭据输入框（或提示 `Username for 'https://github.com':`）：
+
+| 提示项 | 填什么 |
+| --- | --- |
+| `Username for 'https://github.com':` | `XiaopingDeng` |
+| `Password for 'https://XiaopingDeng@github.com':` | **粘贴刚才那串 `ghp_…` token**（不是 GitHub 登录密码） |
+
+> 若误弹到「浏览器登录」窗口，直接关掉，选终端里手动输入凭据的方式。
+> token 想要免输，可执行 `git config --global credential.helper manager` 让它记住；不设也不影响 push，每次粘贴一遍即可。
+
+#### A-4. 开启 Pages 并访问
+
+1. 推送成功后进仓库 **Settings → Pages**。
+2. **Source** 选 `Deploy from a branch`。
+3. **Branch** 选 `main`，目录选 `/ (root)`，点 **Save**。
+4. 等待 1—2 分钟（首次构建稍慢），访问 <https://XiaopingDeng.github.io> 即可。
 
 ### 方式 B：项目子路径（地址形如 `https://用户名.github.io/仓库名/`）
 
-1. 新建任意名称的仓库（如 `homepage`），把文件放到根目录并推送。
+1. 新建任意名称的仓库（如 `homepage`），把文件放到根目录并按上面 A-2、A-3 的方式推送。
 2. 仓库 **Settings → Pages** → Source 选 `Deploy from a branch` → Branch 选 `main` + `/ (root)` → Save。
-3. 访问 `https://<你的用户名>.github.io/<仓库名>/`。
+3. 访问 `https://XiaopingDeng.github.io/<仓库名>/`。
+
+### 常见报错对照
+
+| 报错 | 原因 | 处理 |
+| --- | --- | --- |
+| `git@github.com: Permission denied (publickey).` | 用的是 SSH，且本机公钥没注册到该账号 | 换成 HTTPS：`git remote set-url origin https://github.com/XiaopingDeng/XiaopingDeng.github.io.git` |
+| `fatal: repository '…' not found` | 仓库还没在网页端创建，或名字/大小写不一致 | 先去 <https://github.com/new> 建 `XiaopingDeng.github.io` |
+| `remote: Support for password authentication was removed` | Password 填了 GitHub 登录密码 | Password 处改填 `ghp_…` token |
+| `! [rejected] main -> main (fetch first)` | 建库时勾了 README，远端已有提交 | `git pull --rebase origin main` 后再 push；或删库重建空仓库 |
+| 404 访问不到主页 | 仓库名不是 `<用户名>.github.io`，或 Pages 未开启 | 核对仓库名，并到 Settings → Pages 确认 Branch 为 `main` + `/ (root)` |
 
 > 本页所有链接（`styles.css`、`images/profile.jpg`、`files/cv.pdf`、页内锚点）均为相对路径，因此**方式 A 和方式 B 都能直接工作**，无需修改。
 
@@ -67,30 +128,34 @@ homepage/
 
 ### 项目配图位置对照
 
-页面里 8 张项目照片分别归属如下（`figure-grid` 图集组件）：
+页面里 8 张项目照片**各自内嵌在对应项目条目的描述容器内**（`figure-grid` 图集组件）：
 
-| 图片文件 | 所在区块 | 图注主体 |
+| 图片文件 | 归属项目条目 | 图注主体 |
 | --- | --- | --- |
-| `面向大型办公建筑的非侵入式负荷监测系统与技术.png` | 科研项目 → 主持（表格后第 1 个图集） | 非侵入式负荷监测自研监测终端 |
-| `全频段及重点频段混合侦测电路设计-硬件.jpg` | 同上 | 测向天线阵列与硬件联试 |
+| `面向大型办公建筑的非侵入式负荷监测系统与技术.png` | 主持项目 · 面向大型办公建筑的非侵入式负荷监测系统与技术 | 非侵入式负荷监测自研监测终端 |
+| `全频段及重点频段混合侦测电路设计-硬件.jpg` | 主持项目 · 全频段及重点频段混合侦测电路设计及 PCB Layout | 测向天线阵列与硬件联试 |
 | `全频段及重点频段混合侦测电路设计-软件.png` | 同上 | 无人机测向设备监控平台 |
-| `超高速可见光通信终端项目-硬件.png` | 科研项目 → 主持（第 2 个图集，跨行大图） | ALINX 自研基带处理板 |
-| `超高速可见光通信终端项目-系统.png` | 同上 | 系统联调现场 |
+| `超高速可见光通信终端项目-硬件.png` | 主持项目 · 超高速可见光通信终端项目 | ALINX 自研基带处理板 |
+| `超高速可见光通信终端项目-系统.png` | 同上（`class="tall"` 竖图） | 系统联调现场 |
 | `超高速可见光通信终端项目-测试软件.png` | 同上 | OFDM／QPSK 上位机软件 |
-| `绿色智能建造和建筑工业化关键技术与成套装备.png` | 科研项目 → 参与（`<ul>` 之后） | 预制构件生产质量检测系统 |
-| `高速数据接收机（HDR）.png` | 科研项目 → 折叠区「早期型号与预研项目」→ 工程项目末尾 | HDR 原理样机联试环境 |
+| `绿色智能建造和建筑工业化关键技术与成套装备.png` | 参与项目 · 山东省重点研发计划（重大科技创新工程） | 预制构件生产质量检测系统 |
+| `高速数据接收机（HDR）.png` | 折叠区「早期型号与预研项目」· 高速数据接收机（HDR） | HDR 原理样机联试环境 |
 
 ---
 
 ## 三、项目配图（figure-grid 图集）
 
-项目照片用 `.figure-grid` 组件排版：桌面端自动按 240px 最小宽排成多列，窄屏自动降为单列，点击任意图片在新标签页打开原图。
+项目照片用 `.figure-grid` 组件排版：桌面端自动按 180px 最小宽排成多列，窄屏自动降为单列，点击任意图片在新标签页打开原图。
+
+**每个图集内嵌在它所对应的那个项目条目里**（主管项目在表格行 `<td>` 内，参与项目/工程项目在 `<li>` 内），不再集中堆在表格之后。图注说明写在 `figcaption` 中。
 
 ### 换图（最常用）
 
 **直接替换 `images/` 下的同名文件**，不用动 HTML。建议：
 
-- 尺寸：横图建议 ≥ 900px 宽，比例 16:10 或 4:3 效果最好（非该比例会被 `object-fit: cover` 居中裁切）
+- **尺寸：任意比例均可完整显示，图片不会被裁切。** 横图建议 ≥ 900px 宽，比例 16:10 或 4:3 排版最匀称
+- **竖长图**（如 `超高速可见光通信终端项目-系统.png`，1600×2133）给 `<figure>` 加 `class="tall"`，会限高 400px 且不拉伸变形
+- **跨整行的大图**给 `<figure>` 加 `class="wide"`，会占满整行
 - 体积：单张控制在 300 KB 以内，可显著加快首屏加载
 
 ### 改图注
@@ -111,13 +176,15 @@ homepage/
 ### 增删图 / 整块新增图集
 
 - **增删单张图**：在一个 `figure-grid` 内增删 `<figure>` 块即可，栅格会自动重排。
-- **新增一整块图集**：在目标位置粘一个完整的 `<div class="figure-grid">…</div>`。
-- **跨整行的大图**：给 `<figure>` 加 `class="wide"`，例如 `<figure class="wide">`，该图会占满整行、高度 260px。
+- **新增一整块图集**：在目标项目中粘一个完整的 `<div class="figure-grid">…</div>`（放在该项目自己的 `<td>` 或 `<li>` 内）。
+- **跨整行的大图**：给 `<figure>` 加 `class="wide"`，例如 `<figure class="wide">`，该图会占满整行。
+- **竖长图**：给 `<figure>` 加 `class="tall"`，例如 `<figure class="tall">`，限高 400px 居中显示。
 
 ### 其他
 
 - **`alt` 一定要写**，既是无障碍要求，也是图片加载失败时的兜底文字。
-- **打印样式**已单独处理：打印时图片高度自动、最大 200px，并禁止跨页断开，Ctrl/Cmd+P 直接出干净纸质版。
+- **不要用 `object-fit: cover` 配固定高度** —— 那会把图裁掉。当前样式是 `img { width: 100%; height: auto }`，整张图完整显示。
+- **打印样式**已单独处理：打印时图片自然高度、禁止跨页断开，Ctrl/Cmd+P 直接出干净纸质版。
 
 ---
 
