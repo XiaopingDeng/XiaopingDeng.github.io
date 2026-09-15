@@ -8,9 +8,12 @@
 <meta name="author" content="邓晓平">
 <meta name="keywords" content="邓晓平, Xiaoping Deng, 山东建筑大学, 信息与电气工程学院, 物联网, 非侵入式负荷监测, FPGA, 数字信号处理, 时间序列分析、智能建筑">
 <meta property="og:type" content="profile">
+<meta property="og:locale" content="zh_CN">
 <meta property="og:title" content="邓晓平 · 山东建筑大学">
 <meta property="og:description" content="副教授 · 智能技术教研室主任 · 物联网工程专业主任">
 <meta property="og:image" content="images/profile.jpg">
+<link rel="alternate" hreflang="zh-CN" href="https://XiaopingDeng.github.io/">
+<link rel="alternate" hreflang="en" href="https://XiaopingDeng.github.io/en.html">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23f4a261'/%3E%3Ctext x='32' y='45' font-size='36' font-family='Helvetica,Arial,sans-serif' font-weight='bold' fill='%23fff' text-anchor='middle'%3ED%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -92,6 +95,10 @@
         <a href="#teaching" class="nav-link">教学与奖励</a>
         <a href="#contact" class="nav-link">联系我们</a>
     </nav>
+    <div class="lang-switch" role="group" aria-label="语言切换 / Language">
+        <span class="is-current" lang="zh-CN">中文</span>
+        <a href="en.html" id="langLink" data-href="en.html" hreflang="en" lang="en" title="Switch to English">EN</a>
+    </div>
 </header>
 
 <!-- ============================= 关于我 ============================= -->
@@ -183,7 +190,7 @@
     </details>
 
     <details>
-        <summary>建筑设备智能化与能效管理 · 非侵式负荷监测</summary>
+        <summary>建筑设备智能化与能效管理 · 非侵入式负荷监测</summary>
         <div class="details-body">
             <ul>
                 <li>非侵入式负荷监测（NILM）：综述（《自动化学报》）、基于改进 kNN 与暂稳态特征的事件检测、时间卷积网络并行负荷分解、高低频数据融合的监测系统设计与应用。</li>
@@ -698,6 +705,12 @@
 (function () {
     // 页脚年份
     document.getElementById('year').textContent = new Date().getFullYear();
+
+    // 语言切换：带上当前所在区块的锚点，切过去后仍停在同一个小节
+    var langLink = document.getElementById('langLink');
+    if (langLink && location.hash) {
+        langLink.href = langLink.getAttribute('data-href') + location.hash;
+    }
 
     // 导航高亮：滚动到哪个区块就点亮哪个
     var links = Array.prototype.slice.call(document.querySelectorAll('.navbar .nav-link'));

@@ -1,11 +1,12 @@
 # 邓晓平 · 个人主页（GitHub Pages）
 
-单页静态站点，纯 HTML + CSS + 少量原生 JS，无构建步骤、无外部依赖（图标为内联 SVG）。
+单页静态站点，纯 HTML + CSS + 少量原生 JS，无构建步骤、无外部依赖（图标为内联 SVG）。**中英文双语**，右上角切换。
 
 ```
 homepage/
-├── index.html            主页（唯一页面，所有区块通过锚点导航）
-├── styles.css            全部样式
+├── index.html            中文主页（默认首页，所有区块通过锚点导航）
+├── en.html               英文主页（与 index.html 一一对应，见「六、中英文双语」）
+├── styles.css            全部样式（两页共用）
 ├── images/
 │   ├── profile.jpg       头像（从简历中提取）
 │   └── ….png / ….jpg     项目配图（8 张，见下）
@@ -13,6 +14,8 @@ homepage/
 │   └── cv.pdf            简历 PDF（供页面「下载简历」按钮使用）
 └── README.md
 ```
+
+> 两个页面**共用同一套 `styles.css`、`images/`、`files/`**，锚点 id 也完全一致（`#about`、`#projects`…），所以切换语言时能停在同一个区块。
 
 ---
 
@@ -108,8 +111,13 @@ push 时会弹出凭据输入框（或提示 `Username for 'https://github.com':
 
 ## 二、日常维护（只改内容，不用碰样式）
 
+> **注意：站内所有内容都有中英两份。** 下表里的「改哪里」指中文版 `index.html`；同样的改动要在英文版 `en.html` 的对应位置再做一遍。因为两页结构完全一致（区块、id、class、图片文件名都相同），所以是「照着同一个小节改两遍」，不涉及任何样式调整。英文全文另有一份对照说明，见「六、中英文双语」。
+
 | 想改什么 | 改哪里 |
 | --- | --- |
+| 姓名、职称、单位 | `index.html` 顶部 `<!-- 顶部介绍 -->` 区块（英文版在 `en.html` 同处，英文姓名放 `<h1>`、中文名放 `<h1 class="name-en">`） |
+| 语言切换控件 | 顶部导航条末尾的 `<div class="lang-switch">`；两页各一个，**只改 href 不要改 id**（`id="langLink"` 供脚本保留锚点用） |
+| 中／英文页面互链 | 两页 `<head>` 里的 `<link rel="alternate" hreflang="zh-CN" …>` 与 `hreflang="en"`；换域名时要一起改 |
 | 姓名、职称、单位 | `index.html` 顶部 `<!-- 顶部介绍 -->` 区块 |
 | 个人简介段落 | 区块 `<!-- 关于我 -->` 的第一、二段 |
 | 教育与工作经历 | 同区块的 `<ul class="timeline">` |
@@ -173,6 +181,8 @@ push 时会弹出凭据输入框（或提示 `Username for 'https://github.com':
 
 `figcaption` 里 `<b>` 会显示为深色加粗，`<br>` 换行，后面接常规灰色小字。
 
+> 图注是文字，所以**中英各有一份**：英文图注在 `en.html` 里同样位置的那个 `<figure>` 中；图片文件同名共用，但 `alt` 也各写各的。
+
 ### 增删图 / 整块新增图集
 
 - **增删单张图**：在一个 `figure-grid` 内增删 `<figure>` 块即可，栅格会自动重排。
@@ -225,3 +235,61 @@ python -m http.server 8000
 - 已适配手机（760px 断点）、平板与桌面，导航栏在窄屏自动换行。
 - 已提供 `@media print` 打印样式，直接 Ctrl/Cmd+P 可生成干净纸质版。
 - 所有图片带 `alt`，所有纯图标链接带 `aria-label`。
+
+---
+
+## 六、中英文双语
+
+站点是**两个文件、一套样式**，不是运行时翻译：
+
+| 文件 | 语言 | 地址 |
+| --- | --- | --- |
+| `index.html` | 中文（`<html lang="zh-CN">`） | `https://XiaopingDeng.github.io/` |
+| `en.html` | 英文（`<html lang="en">`） | `https://XiaopingDeng.github.io/en.html` |
+
+### 为什么用两个文件而不是 JavaScript 换字
+
+两者都要「改一处、动两遍」，所以维护成本相同；但双文件方案额外拿到：不依赖 JS（关掉脚本英文页照样正常）、英文页有自己的 `<html lang="en">` 与英文 `<meta>`（利于搜索引擎与屏幕阅读器）、可直接 Ctrl+P 打印英文版、英文页 URL 可以单独发给外方合作者。
+
+### 切换控件
+
+顶部吸顶导航条末尾的 `.lang-switch`：
+
+```html
+<div class="lang-switch" role="group" aria-label="语言切换 / Language">
+    <span class="is-current" lang="zh-CN">中文</span>
+    <a href="en.html" id="langLink" data-href="en.html" hreflang="en" lang="en" title="Switch to English">EN</a>
+</div>
+```
+
+- 当前语言用 `<span class="is-current">`（橙底白字，不可点），另一种语言用 `<a>`。英文页里两者对调。
+- 桌面端绝对定位在导航条右端；≤760px 时改为在导航下方居中（导航会换行，贴右会挤）。
+- 打印时隐藏。
+- **`id="langLink"` 与 `data-href` 是脚本钩子**：页面底部脚本会把当前区块锚点接到链接后面，于是「在科研项目处点 EN」会跳到 `en.html#projects` 而不是回到页首。删掉这两个属性只是失去该体验，不会报错。
+
+### 新增／修改内容的规则
+
+两页必须**保持结构一致**：区块顺序、`<section id>`、class、`<figure>` 顺序、图片文件名、`<details>` 数量都要对得上；只有「人看的文字」不同。英文页里 `<i>…</i>` 比中文页多，是因为英文按学术惯例把期刊名、课程名排成斜体，这是正常的文字层差异。
+
+改完可以用脚本自查两页标签数是否一致（任选一种）：
+
+```python
+import re, io
+def c(p):
+    s = io.open(p, encoding='utf-8').read()
+    return {t: (len(re.findall(r'<'+t+r'[\s>/]', s)), len(re.findall(r'</'+t+r'>', s)))
+              for t in ['section','div','ul','ol','li','details','table','tr','td','figure','figcaption','h2','h3','p']}
+a, b = c('index.html'), c('en.html')
+for t in a:
+    print(t, a[t], b[t], 'OK' if a[t] == b[t] else '<<< 不一致')
+```
+
+两点已知的「假警报」，不必修：`<a>` 在两页都会报「开口比闭口多 1」（多出来的那个在「联系我们」被注释掉的卡片里）；`<i>` 两页数量本来就不同（见上）。
+
+### 英文页特有的两个排版注意点
+
+1. **单位名称很长**，Intro 右侧 `.school-info` 因此不能设 `flex-shrink: 0`——否则会把整行顶出页面产生横向滚动条。现在是 `flex: 0 1 auto; max-width: 34%`，长名称会自动折行。
+2. 英文名 `Xiaoping Deng` 比「邓晓平」宽，窄屏（约 780px 以下）`<h1>` 会折成两行，属正常表现。
+
+> 想改成「访问英文浏览器自动跳英文页」也可以做，但默认**不做**：自动跳转容易把中文用户从首页踢走，也不利于搜索引擎收录，且一旦跳转规则写错会来回弹。需要时再说。
+

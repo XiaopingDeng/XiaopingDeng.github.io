@@ -83,6 +83,7 @@ b {
 
 .intro-text {
     padding-top: 6px;
+    flex: 1 1 auto;
 }
 
 .intro-text h1 {
@@ -134,7 +135,9 @@ b {
 .school-info {
     margin-left: auto;
     text-align: right;
-    flex-shrink: 0;
+    /* 可收缩并限宽：英文版单位名称很长，flex-shrink:0 会把整行顶出页面 */
+    flex: 0 1 auto;
+    max-width: 34%;
     padding-top: 6px;
 }
 
@@ -193,6 +196,49 @@ b {
 .navbar .nav-link.is-active {
     color: var(--accent-deep);
     border-bottom-color: var(--accent);
+}
+
+/* ------------------------------------------------------------ 中英文切换 */
+/* .banner 是 sticky（已定位），可作绝对定位的包含块，切换控件贴在导航条右上角 */
+.lang-switch {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    padding: 2px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: #fff;
+    font-size: .78rem;
+    line-height: 1;
+}
+
+.lang-switch a,
+.lang-switch span {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-weight: 500;
+    letter-spacing: .03em;
+    white-space: nowrap;
+}
+
+.lang-switch .is-current {
+    color: #fff;
+    background: var(--accent);
+}
+
+.lang-switch a {
+    color: var(--muted);
+}
+
+.lang-switch a:hover {
+    color: var(--accent-deep);
+    background: var(--accent-wash);
+    text-decoration: none;
 }
 
 /* -------------------------------------------------------------------- 区块 */
@@ -736,6 +782,7 @@ footer a {
         margin-left: 0;
         text-align: left;
         width: 100%;
+        max-width: none;
         padding-top: 0;
     }
 
@@ -745,6 +792,14 @@ footer a {
 
     .navbar .nav-link {
         font-size: .92rem;
+    }
+
+    /* 窄屏导航会换行，切换控件改为在导航下方居中 */
+    .lang-switch {
+        position: static;
+        transform: none;
+        width: max-content;
+        margin: 9px auto 0 auto;
     }
 
     .news-list li {
@@ -774,6 +829,10 @@ footer a {
 
     .banner,
     .to-top {
+        display: none;
+    }
+
+    .lang-switch {
         display: none;
     }
 
