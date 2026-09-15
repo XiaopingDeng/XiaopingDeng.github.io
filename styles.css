@@ -165,7 +165,13 @@ b {
     backdrop-filter: saturate(160%) blur(8px);
     border-top: 1px solid var(--line);
     border-bottom: 1px solid var(--line);
-    text-align: center;
+    /* 导航链接与语言切换放在同一个 flex 行里：
+       链接在「扣掉切换控件之后的剩余宽度」中居中，因此两者永远不会重叠。
+       （早期版本把切换控件绝对定位在右端，英文导航更宽时会压到 Contact 上） */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
     padding: 11px 0;
     margin-bottom: 44px;
 }
@@ -175,6 +181,7 @@ b {
     flex-wrap: wrap;
     justify-content: center;
     gap: 4px 30px;
+    flex: 1 1 auto;
 }
 
 .navbar .nav-link {
@@ -199,12 +206,9 @@ b {
 }
 
 /* ------------------------------------------------------------ 中英文切换 */
-/* .banner 是 sticky（已定位），可作绝对定位的包含块，切换控件贴在导航条右上角 */
+/* 与 .navbar 同处 .banner 这一 flex 行，不再绝对定位，故不可能压住导航链接 */
 .lang-switch {
-    position: absolute;
-    right: 0;
-    top: 50%;
-    transform: translateY(-50%);
+    flex: 0 0 auto;
     display: inline-flex;
     align-items: center;
     gap: 2px;
@@ -757,6 +761,31 @@ footer a {
 }
 
 /* ------------------------------------------------------------------ 响应式 */
+/* 英文导航标签比中文宽，中等宽度下先收紧间距，尽量让链接保持一行 */
+@media (max-width: 960px) {
+    .navbar {
+        gap: 4px 22px;
+    }
+}
+
+/* 英文导航比中文宽：可视宽度不足约 805px 时，导航自己就会折成两行。
+   此时若仍让切换控件与导航并排，它会「悬」在两行文字的缝隙里。
+   所以在导航将要折行之前，就把切换控件挤到导航下方居中。
+   （门槛取实测结果：英文导航单行容纳需要可视宽度 ≥ 805px） */
+@media (max-width: 804px) {
+    .banner {
+        flex-wrap: wrap;
+    }
+
+    .navbar {
+        flex: 1 1 100%;
+    }
+
+    .lang-switch {
+        margin-top: 2px;
+    }
+}
+
 @media (max-width: 760px) {
     body {
         font-size: 14.5px;
@@ -794,13 +823,7 @@ footer a {
         font-size: .92rem;
     }
 
-    /* 窄屏导航会换行，切换控件改为在导航下方居中 */
-    .lang-switch {
-        position: static;
-        transform: none;
-        width: max-content;
-        margin: 9px auto 0 auto;
-    }
+    /* 切换控件落到导航下方（换行规则见上方 804px 断点） */
 
     .news-list li {
         flex-direction: column;
