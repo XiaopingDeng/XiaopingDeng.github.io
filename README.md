@@ -225,7 +225,7 @@ push 时会弹出凭据输入框（或提示 `Username for 'https://github.com':
 ```bash
 cd homepage
 python -m http.server 8000
-# 浏览器打开 http://localhost:8000
+# 浏览器打开 http://localhost:8000 
 ```
 
 ---
